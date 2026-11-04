@@ -53,9 +53,15 @@ def home():
         .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;padding:20px;max-width:1300px;margin:auto}}
         .card{{background:#1a1a1e;border:1px solid #25252b;border-radius:18px;overflow:hidden}} .card-img{{height:200px;background:#111;position:relative}} .card-img img{{width:100%;height:100%;object-fit:cover}} .cat-tag{{position:absolute;top:12px;left:12px;background:#FFC107;color:#000;font-size:10px;font-weight:800;padding:5px 10px;border-radius:6px}}
         .card-body{{padding:14px}} .qty-row{{display:flex;align-items:center;gap:8px;margin-top:10px}} .qty-btn{{width:32px;height:32px;border-radius:8px;border:1px solid #333;background:#222;color:white;font-weight:800;cursor:pointer}} .qty-num{{width:30px;text-align:center}} .btn-add{{background:#FFC107;color:#000;border:none;flex:1;padding:10px;border-radius:10px;font-weight:800;cursor:pointer}}
-        #modal{{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:40;justify-content:center;align-items:center;padding:12px;overflow-y:auto}}
-        .modal-box{{background:#1a1a1e;border:1px solid #2a2a2e;border-radius:16px;max-width:480px;width:95%;max-height:85vh;display:flex;flex-direction:column;overflow-y:auto}}
-        #cart-items, #lista{{flex:1;overflow-y:auto;max-height:60vh}}
+        #modal{{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:40;justify-content:center;align-items:center;padding:12px}}
+
+        .modal-box{{background:#1a1a1e;border:1px solid #2a2a2e;border-radius:16px;max-width:420px;width:95%;max-height:90vh;display:flex;flex-direction:column;padding:20px;gap:12px}}
+
+        #lista, #cart-items{{flex:1;overflow-y:auto;max-height:38vh;padding-right:8px}}
+
+        /* para que la barra no se vea blanca fea */
+        #lista::-webkit-scrollbar, #cart-items::-webkit-scrollbar{{width:6px}}
+        #lista::-webkit-scrollbar-thumb, #cart-items::-webkit-scrollbar-thumb{{background:#2a2a2e;border-radius:10px}}
     </style>
     </head><body>
         <div class="topbar"><div class="brand"><img src="/static/logo.png" onerror="this.src='https://via.placeholder.com/42/FFC107/000?text=F'" class="icon"><div><b>FÉNIX</b><br><small>DISTRIBUCIONES</small></div></div><div class="actions"><button class="btn-cart" onclick="abrir()">🛒 $<span id="cartTotalTop">0</span> (<span id="cartCountTop">0</span>)</button></div></div>
