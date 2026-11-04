@@ -14,178 +14,118 @@ if not os.path.exists("static"):
     os.makedirs("static")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-class Pedido(BaseModel):
-    nombre: str
-    direccion: str
-    celular: str
-    items: dict
-    total: int
+MI_WHATSAPP = "3138816737"
 
-HTML_PAGE = """
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FENIX Distribuciones</title>
-<style>
-*{box-sizing:border-box} body{margin:0;font-family:Inter,Arial;background:#0f0f10;color:white;overflow-x:hidden}
-.topbar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:#0f0f10;border-bottom:1px solid #222;position:sticky;top:0;z-index:20}
-.brand{display:flex;align-items:center;gap:10px} .icon{width:42px;height:42px;border-radius:50%;background:#111;object-fit:cover} .brand b{color:#FFC107}
-.btn-cart{background:#FFC107;color:#000;padding:10px 16px;border-radius:10px;font-weight:800;border:none;cursor:pointer}
-.hero{margin:20px;background:linear-gradient(180deg,#1a1a1e,#15151a);border-radius:20px;padding:28px 30px;border:1px solid #222} .badge{background:#2a2210;color:#FFC107;padding:6px 12px;border-radius:20px;font-size:11px;letter-spacing:1px}
-.search-box{background:#1a1a1e;border:1px solid #2a2a2e;border-radius:12px;padding:12px 16px;display:flex;gap:10px;flex:1;max-width:400px;margin:0 20px} .search-box input{background:transparent;border:none;color:white;width:100%;outline:none}
-.pills{display:flex;gap:8px;flex-wrap:wrap;padding:10px 20px} .pill{background:#1a1a1e;border:1px solid #2a2a2e;color:#aaa;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px} .pill.active{background:#FFC107;color:#000;border-color:#FFC107;font-weight:800}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;padding:20px;max-width:1300px;margin:auto}
-.card{background:#1a1a1e;border:1px solid #25252b;border-radius:18px;overflow:hidden;transition:.2s} .card:hover{border-color:#FFC10744;transform:translateY(-2px)}
-.card-img{height:210px;background:#111;position:relative} .card-img img{width:100%;height:100%;object-fit:cover}
-.card-body{padding:14px} .card-body b{font-size:14px;display:block;min-height:36px} .price{color:#FFC107;font-weight:800;margin-top:6px}
-.qty-row{display:flex;align-items:center;gap:8px;margin-top:10px} .qty-btn{width:32px;height:32px;border-radius:8px;border:1px solid #333;background:#222;color:white;cursor:pointer}
-.btn-add{width:100%;background:#FFC107;color:#000;border:none;padding:11px;border-radius:10px;font-weight:800;margin-top:12px;cursor:pointer}
+class ItemVenta(BaseModel):
+    id: int
+    cant: int
 
-/* === CARRITO ARREGLADO - MANTIENE TU ESTILO ORIGINAL === */
-#modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:50;justify-content:center;align-items:center;padding:12px}
-.modal-box{background:#1a1a1e;border:1px solid #2a2a2e;border-radius:16px;max-width:420px;width:95%;max-height:90vh;display:flex;flex-direction:column;padding:22px;gap:10px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
-#lista{flex:1;overflow-y:auto;max-height:38vh;padding-right:8px;margin:8px 0}
-#lista::-webkit-scrollbar{width:6px} #lista::-webkit-scrollbar-thumb{background:#333;border-radius:10px} #lista::-webkit-scrollbar-track{background:transparent}
-.cart-item{padding:12px 0;border-bottom:1px solid #24242a}
-.cart-item:last-child{border:none}
-.inp{width:100%;padding:11px;border-radius:8px;border:1px solid #2a2a2e;background:#111;color:white;margin-top:8px;outline:none}
-.inp:focus{border-color:#FFC107}
-.btn-wsp{background:#25D366;color:white;border:none;width:100%;padding:13px;border-radius:10px;font-weight:800;cursor:pointer;margin-top:10px;font-size:14px}
-.btn-continue{background:transparent;color:#888;border:none;padding:10px;cursor:pointer;width:100%}
-
-/* === SECCION RESEÑAS NUEVA === */
-.reviews{padding:50px 20px;max-width:1300px;margin:50px auto 0 auto;border-top:1px solid #1f1f25}
-.reviews h2{text-align:center;font-size:28px;margin:0} .reviews .sub{text-align:center;color:#888;margin:8px 0 28px 0}
-.reviews-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
-.review-card{background:#1a1a1e;border:1px solid #25252b;border-radius:16px;padding:20px;position:relative}
-.stars{color:#FFC107;font-size:18px;margin-bottom:10px} .review-card p{color:#ccc;line-height:1.4;font-size:14px}
-.review-name{color:#FFC107;font-weight:bold;margin-top:14px;font-size:14px} .review-role{font-size:11px;color:#666;margin-top:2px}
-.badge-verified{position:absolute;top:16px;right:16px;background:#1a2a1a;color:#25D366;font-size:10px;padding:4px 8px;border-radius:20px;border:1px solid #2a4a2a}
-</style>
-</head>
-<body>
-<div class="topbar"><div class="brand"><img src="/static/logo.png" onerror="this.style.display='none'" class="icon"><div><b>FÉNIX</b> Distribuciones</div></div><button class="btn-cart" onclick="abrirCarrito()">🛒 <span id="cart-count">0</span></button></div>
-
-<div class="hero"><span class="badge">CATÁLOGO OFICIAL</span><h1 style="margin:12px 0 8px 0">Insumos para Barbería de Alta Calidad</h1><p style="color:#888;margin:0">Elige la cantidad y haz tu pedido directo a WhatsApp. Entrega en Bogotá.</p></div>
-
-<div style="display:flex;justify-content:center;padding:0 20px"><div class="search-box">🔍<input id="busc" placeholder="Buscar productos... (ej: dorco, capa, cera)" onkeyup="filtrar()"></div></div>
-<div class="pills" id="pills"></div>
-<div id="grid" class="grid"></div>
-
-<!-- RESEÑAS -->
-<div class="reviews">
-<h2>⭐ Lo que dicen nuestros clientes</h2>
-<p class="sub">Más de 200 barberos ya confían en FÉNIX</p>
-<div class="reviews-grid">
-<div class="review-card"><span class="badge-verified">✓ Verificado</span><div class="stars">★★★★★</div><p>"Excelente calidad en las cuchillas Dorco y entrega super rápida en Bogotá. Mis clientes notan la diferencia en el afeitado."</p><div class="review-name">Andrés Molina</div><div class="review-role">Barbería La 93 - Bogotá</div></div>
-<div class="review-card"><span class="badge-verified">✓ Verificado</span><div class="stars">★★★★★</div><p>"Los precios más competitivos que encontré. La capa profesional salió buenísima y duradera, nada de plástico barato."</p><div class="review-name">Cristian Durán</div><div class="review-role">Fades & Co - Chapinero</div></div>
-<div class="review-card"><span class="badge-verified">✓ Verificado</span><div class="stars">★★★★★</div><p>"Hago pedido cada 15 días por WhatsApp y siempre llega completo. La atención por WhatsApp es 10/10."</p><div class="review-name">Yenifer Londoño</div><div class="review-role">Studio Barber - Usaquén</div></div>
-</div>
-</div>
-
-<div id="modal">
-<div class="modal-box">
-<h2 style="margin:0">Tu pedido - FÉNIX</h2>
-<div id="lista"></div>
-<h3 style="margin:10px 0 0 0">Total: $<span id="tot">0</span></h3>
-<input class="inp" id="nom" placeholder="Nombre *">
-<input class="inp" id="dir" placeholder="Dirección *">
-<input class="inp" id="cel" placeholder="Celular *">
-<button class="btn-wsp" onclick="enviarWsp()">📲 Enviar pedido por WhatsApp</button>
-<button class="btn-continue" onclick="cerrarCarrito()">Seguir comprando</button>
-</div>
-</div>
-
-<script>
-const productosFallback = [
-{id:1,nombre:"cuchillas dorco x 60 hojas individuales",precio:15000,cat:"CUCHILLAS",img:"https://i.imgur.com/8Km9tLL.png",stock:20},
-{id:2,nombre:"losion after shave 500ml",precio:18000,cat:"LOCIÓN",img:"https://i.imgur.com/8Km9tLL.png",stock:15},
-{id:3,nombre:"capa profesional",precio:20000,cat:"CAPAS",img:"https://i.imgur.com/8Km9tLL.png",stock:10},
-{id:4,nombre:"cuelleras 5 rollos x 120 tiras c/u total 600",precio:19000,cat:"CUELLERAS",img:"https://i.imgur.com/8Km9tLL.png",stock:25},
-{id:5,nombre:"cera para cabello acabado mate",precio:24000,cat:"CERAS",img:"https://i.imgur.com/8Km9tLL.png",stock:12}
-];
-let productos = productosFallback;
-let carrito = {};
-let catActiva = "TODOS";
-
-async function cargarProductos(){
- try{
-  let r = await fetch('/api/productos');
-  let data = await r.json();
-  if(data && data.length>0) productos = data;
- }catch(e){ console.log("usando fallback"); }
- renderPills(); renderGrid(productos);
-}
-
-function renderPills(){
- const cats=["TODOS",...new Set(productos.map(p=>p.cat || p.categoria || "OTROS"))];
- document.getElementById("pills").innerHTML=cats.map(c=>`<button class="pill ${c==catActiva?'active':''}" onclick="filtrarCat('${c}')">${c}</button>`).join("");
-}
-function renderGrid(lista){
- document.getElementById("grid").innerHTML=lista.map(p=>`
- <div class="card">
-  <div class="card-img"><img src="${p.img || p.imagen || 'https://via.placeholder.com/300/111/FFC107?text=FENIX'}" onerror="this.src='https://via.placeholder.com/300/111/FFC107?text=FENIX'"></div>
-  <div class="card-body">
-   <b>${p.nombre}</b>
-   <div class="price">$${Number(p.precio).toLocaleString()}</div>
-   <small style="color:#666">Stock: ${p.stock || 10}</small>
-   <div class="qty-row"><button class="qty-btn" onclick="cambiar(${p.id},-1)">-</button><span id="q-${p.id}">${carrito[p.id]||1}</span><button class="qty-btn" onclick="cambiar(${p.id},1)">+</button></div>
-   <button class="btn-add" onclick="agregar(${p.id})">Agregar</button>
-  </div>
- </div>`).join("");
-}
-function cambiar(id,d){ let el=document.getElementById("q-"+id); if(!el) return; let v=parseInt(el.innerText)+d; if(v<1)v=1; el.innerText=v; if(carrito[id]){carrito[id]=v; actualizarModal();}}
-function agregar(id){ let cant=parseInt(document.getElementById("q-"+id)?.innerText || "1"); carrito[id]=(carrito[id]||0)+cant; actualizarCont(); abrirCarrito(); }
-function actualizarCont(){ document.getElementById("cart-count").innerText=Object.values(carrito).reduce((a,b)=>a+b,0); }
-function filtrar(){ let t=document.getElementById("busc").value.toLowerCase(); renderGrid(productos.filter(p=>p.nombre.toLowerCase().includes(t) && (catActiva=="TODOS" || (p.cat||p.categoria)==catActiva))); }
-function filtrarCat(c){ catActiva=c; renderPills(); filtrar(); }
-function abrirCarrito(){ actualizarModal(); document.getElementById("modal").style.display="flex"; }
-function cerrarCarrito(){ document.getElementById("modal").style.display="none"; }
-function actualizarModal(){
- let lista=document.getElementById("lista"); let total=0; let html="";
- for(let id in carrito){
-  let p=productos.find(x=>x.id==id || x.id==parseInt(id)); if(!p) continue; let cant=carrito[id]; let sub=p.precio*cant; total+=sub;
-  html+=`<div class="cart-item"><div style="flex:1"><b style="font-size:13px">${p.nombre}</b><br><small style="color:#888">$${p.precio} x ${cant}</small></div><div style="text-align:right"><div class="qty-row" style="justify-content:flex-end"><button class="qty-btn" onclick="restar(${p.id})">-</button><span>${cant}</span><button class="qty-btn" onclick="sumar(${p.id})">+</button></div><b style="color:#FFC107">$${sub.toLocaleString()}</b></div></div>`;
- }
- if(html=="") html="<p style='color:#888;text-align:center;padding:20px'>Tu carrito está vacío<br>Agrega productos para verlos aquí</p>";
- lista.innerHTML=html; document.getElementById("tot").innerText=total.toLocaleString();
-}
-function sumar(id){carrito[id]++; actualizarCont(); actualizarModal();}
-function restar(id){carrito[id]--; if(carrito[id]<=0) delete carrito[id]; actualizarCont(); actualizarModal();}
-function enviarWsp(){
- let nom=document.getElementById("nom").value.trim(), dir=document.getElementById("dir").value.trim(), cel=document.getElementById("cel").value.trim();
- if(!nom||!dir||!cel){alert("Por favor completa Nombre, Dirección y Celular");return;}
- if(Object.keys(carrito).length==0){alert("Tu carrito está vacío");return;}
- let msg=`Hola FÉNIX Distribuciones, quiero hacer este pedido:%0A%0A`; 
- for(let id in carrito){ let p=productos.find(x=>x.id==id || x.id==parseInt(id)); msg+=`• ${p.nombre} x ${carrito[id]} = $${(p.precio*carrito[id]).toLocaleString()}%0A`; }
- msg+=`%0A*Total: $${document.getElementById("tot").innerText}*%0A%0A*Datos de entrega:*%0ANombre: ${nom}%0ADirección: ${dir}%0ACelular: ${cel}`;
- window.open(`https://wa.me/573000000000?text=${msg}`,"_blank");
-}
-cargarProductos();
-</script>
-</body>
-</html>
-"""
+@app.post("/finalizar-venta")
+def finalizar_venta(items: list[ItemVenta]):
+    for item in items:
+        prod = supabase.table("productos").select("stock").eq("id", item.id).single().execute()
+        if prod.data:
+            nuevo = max(0, prod.data["stock"] - item.cant)
+            supabase.table("productos").update({"stock": nuevo}).eq("id", item.id).execute()
+    return {"ok": True}
 
 @app.get("/", response_class=HTMLResponse)
-async def home():
-    return HTML_PAGE
+def home():
+    data = supabase.table("productos").select("*").execute()
+    productos = data.data
+    for p in productos:
+        if p.get('categoria'): p['categoria'] = p['categoria'].strip()
+    productos_json = json.dumps(productos)
+    cats = list(set([p.get('categoria','General') for p in productos if p.get('categoria')]))
+    btns = "".join([f"<button class='pill' onclick=\"filtrarCat('{c}')\">{c}</button>" for c in cats])
 
-@app.get("/api/productos")
-async def get_productos():
-    try:
-        res = supabase.table("productos").select("*").execute()
-        if res.data:
-            return res.data
-    except Exception as e:
-        print("Error supabase:", e)
-    # fallback si no hay tabla
-    return [
-        {"id":1,"nombre":"cuchillas dorco x 60 hojas individuales","precio":15000,"cat":"CUCHILLAS","img":"","stock":20},
-        {"id":2,"nombre":"losion after shave 500ml","precio":18000,"cat":"LOCIÓN","img":"","stock":15},
-        {"id":3,"nombre":"capa profesional","precio":20000,"cat":"CAPAS","img":"","stock":10},
-        {"id":4,"nombre":"cuelleras 5 rollos x 120 tiras c/u total 600","precio":19000,"cat":"CUELLERAS","img":"","stock":25},
-        {"id":5,"nombre":"cera para cabello acabado mate","precio":24000,"cat":"CERAS","img":"","stock":12},
-    ]
+    html = f"""
+    <html><head><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FENIX Distribuciones</title>
+    <style>
+        *{{box-sizing:border-box}} body{{margin:0;font-family:Arial;background:#0f0f10;color:white}}
+        .topbar{{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:#0f0f10;border-bottom:1px solid #222;position:sticky;top:0;z-index:20}}
+        .brand{{display:flex;align-items:center;gap:10px}} .icon{{width:42px;height:42px;border-radius:50%;background:#111;object-fit:cover}} .brand b{{color:#FFC107}} .brand small{{color:#aaa;font-size:11px}}
+        .btn-cart{{background:#FFC107;color:#000;padding:10px 16px;border-radius:10px;font-weight:800;border:none;cursor:pointer}}
+        .hero{{margin:20px;background:#15151a;border-radius:20px;padding:28px 30px;border:1px solid #222}} .badge{{background:#2a2210;color:#FFC107;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:700}} .hero h1{{font-size:32px;margin:12px 0 8px}} .hero p{{color:#9aa0a6}}
+        .search-box{{background:#1a1a1e;border:1px solid #2a2a2e;border-radius:12px;padding:12px 16px;display:flex;gap:10px;flex:1;max-width:400px;margin:0 20px}} .search-box input{{background:transparent;border:none;color:white;outline:none;width:100%}}
+        .pills{{display:flex;gap:8px;flex-wrap:wrap;padding:10px 20px}} .pill{{background:#1a1a1e;border:1px solid #2a2a2e;color:#aaa;padding:8px 16px;border-radius:20px;cursor:pointer}} .pill.active{{background:#FFC107;color:#000;font-weight:700}}
+        .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;padding:20px;max-width:1300px;margin:auto;align-items:stretch}}
+        /* --- TARJETAS NIVELADAS --- */
+        .card{{background:#1a1a1e;border:1px solid #25252b;border-radius:18px;overflow:hidden;display:flex;flex-direction:column;height:100%}}
+        .card-img{{height:200px;background:#111;position:relative;flex-shrink:0}} .card-img img{{width:100%;height:100%;object-fit:cover}} .cat-tag{{position:absolute;top:12px;left:12px;background:#FFC107;color:#000;font-size:10px;font-weight:800;padding:5px 10px;border-radius:6px}}
+        .card-body{{padding:14px;display:flex;flex-direction:column;flex:1}}
+        .card-title{{margin:0;font-size:14px;line-height:1.3;min-height:36px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
+        .card-desc{{color:#9aa0a6;font-size:12px;min-height:32px;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}}
+        .card-bottom{{margin-top:auto;padding-top:10px}}
+        .price-row{{display:flex;justify-content:space-between;align-items:end}}
+        .qty-row{{display:flex;align-items:center;gap:8px;margin-top:12px}} .qty-btn{{width:36px;height:36px;border-radius:8px;border:1px solid #333;background:#222;color:white;font-weight:800;cursor:pointer}} .qty-num{{width:36px;text-align:center;font-weight:700}} .btn-add{{background:#FFC107;color:#000;border:none;flex:1;padding:10px;border-radius:10px;font-weight:800;cursor:pointer;height:36px}}
+        #modal{{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:40;justify-content:center;align-items:center;padding:12px}}
+        .modal-box{{background:#1a1a1e;border:1px solid #2a2a2e;border-radius:16px;max-width:420px;width:95%;max-height:90vh;display:flex;flex-direction:column;padding:22px;gap:10px}}
+        #lista{{flex:1;overflow-y:auto;max-height:38vh;padding-right:8px}} #lista::-webkit-scrollbar{{width:6px}} #lista::-webkit-scrollbar-thumb{{background:#333;border-radius:10px}}
+        .cart-item{{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #2a2a2e}}
+        .inp{{width:100%;padding:10px;border-radius:8px;border:1px solid #2a2a2e;background:#111;color:white;margin-top:6px}}
+        .reviews{{padding:50px 20px;max-width:1300px;margin:40px auto 0;border-top:1px solid #222}}
+        .reviews h2{{text-align:center;font-size:26px;margin:0}} .reviews .sub{{text-align:center;color:#888;margin:8px 0 28px}}
+        .reviews-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}}
+        .review-card{{background:#1a1a1e;border:1px solid #25252b;border-radius:16px;padding:18px;position:relative}}
+        .stars{{color:#FFC107;margin-bottom:8px}} .review-name{{color:#FFC107;font-weight:bold;margin-top:10px}} .review-role{{font-size:11px;color:#666}}
+        .verified{{position:absolute;top:14px;right:14px;background:#112a11;color:#25D366;font-size:10px;padding:4px 8px;border-radius:20px;border:1px solid #1f4a1f}}
+    </style>
+    </head><body>
+        <div class="topbar"><div class="brand"><img src="/static/logo.png" onerror="this.src='https://via.placeholder.com/42/FFC107/000?text=F'" class="icon"><div><b>FÉNIX</b><br><small>DISTRIBUCIONES</small></div></div><div class="actions"><button class="btn-cart" onclick="abrir()">🛒 $<span id="cartTotalTop">0</span> (<span id="cartCountTop">0</span>)</button></div></div>
+        <div class="hero"><span class="badge">CATÁLOGO </span><h1>Insumos para Barbería de Alta Calidad</h1><p>Elige la cantidad y haz tu pedido directo a WhatsApp.</p></div>
+        <div class="search-box">🔍<input id="busc" placeholder="Buscar productos..." onkeyup="filtrar()"></div>
+        <div class="pills"><button class="pill active" onclick="filtrarCat('TODOS')">Todos</button>{btns}</div>
+        <div id="grid" class="grid"></div>
+        <div class="reviews"><h2>⭐ Lo que dicen nuestros clientes</h2><p class="sub">Más de 200 barberos confían en FÉNIX</p><div class="reviews-grid"><div class="review-card"><span class="verified">✓ Verificado</span><div class="stars">★★★★★</div><p>"Excelente calidad en las cuchillas Dorco y entrega super rápida en Bogotá."</p><div class="review-name">Andrés M.</div><div class="review-role">Barbería La 93</div></div><div class="review-card"><span class="verified">✓ Verificado</span><div class="stars">★★★★★</div><p>"Precios competitivos y la capa profesional salió buenísima."</p><div class="review-name">Cristian D.</div><div class="review-role">Fades & Co</div></div><div class="review-card"><span class="verified">✓ Verificado</span><div class="stars">★★★★★</div><p>"Pido cada 15 días por WhatsApp y siempre llega completo."</p><div class="review-name">Yenifer L.</div><div class="review-role">Studio Barber</div></div></div></div>
+        <div id="modal"><div class="modal-box"><h2>Tu pedido - FÉNIX</h2><div id="lista"></div><h3>Total: $<span id="totM">0</span></h3><input class="inp" id="nom" placeholder="Nombre *"><input class="inp" id="dir" placeholder="Dirección *"><input class="inp" id="tel" placeholder="Celular"><textarea class="inp" id="nota" placeholder="Nota (opcional)" rows="2"></textarea><button onclick="enviar()" style="width:100%;background:#25D366;color:white;padding:14px;border:none;border-radius:10px;font-weight:800;margin-top:8px">📲 Enviar pedido por WhatsApp</button><button onclick="cerrar()" style="width:100%;margin-top:8px;background:#2a2a2e;color:white;padding:12px;border:none;border-radius:10px">Seguir comprando</button></div></div>
+        <script>
+            const prods = {productos_json}; let catA='TODOS'; let cart=[]; let tempQty={{}};
+            function render(l){{
+              let h=''; 
+              l.forEach(p=>{{
+                let img=p.imagen_url||'https://via.placeholder.com/400'; 
+                let cat=(p.categoria||'GENERAL').toUpperCase(); 
+                let q=tempQty[p.id]||1; 
+                h+=`<div class="card">
+                  <div class="card-img"><span class="cat-tag">${{cat}}</span><img src="${{img}}"></div>
+                  <div class="card-body">
+                    <h3 class="card-title">${{p.nombre}}</h3>
+                    <div class="card-desc">${{p.descripcion||''}}</div>
+                    <div class="card-bottom">
+                      <div class="price-row">
+                        <div><small style="color:#9aa0a6;font-size:11px">Precio</small><div style="color:#FFC107;font-weight:800">$${{p.precio}}</div></div>
+                        <div style="color:#9aa0a6;font-size:11px">Stock: ${{p.stock}}</div>
+                      </div>
+                      <div class="qty-row"><button class="qty-btn" onclick="cambiarTemp(${{p.id}},-1)">-</button><span class="qty-num" id="q-${{p.id}}">${{q}}</span><button class="qty-btn" onclick="cambiarTemp(${{p.id}},1)">+</button><button class="btn-add" onclick="add(${{p.id}})">Agregar</button></div>
+                    </div>
+                  </div>
+                </div>` 
+              }}); 
+              document.getElementById('grid').innerHTML=h; 
+            }}
+            function cambiarTemp(id,d){{ let v=(tempQty[id]||1)+d; if(v<1) v=1; tempQty[id]=v; let el=document.getElementById('q-'+id); if(el) el.innerText=v; }}
+            function filtrar(){{ let t=document.getElementById('busc').value.toLowerCase(); let f=prods.filter(p=> p.nombre.toLowerCase().includes(t) && (catA==='TODOS'|| (p.categoria||'').toLowerCase()===catA.toLowerCase())); render(f); }}
+            function filtrarCat(c){{ catA=c; document.querySelectorAll('.pill').forEach(b=>b.classList.remove('active')); event.target.classList.add('active'); filtrar(); }}
+            function add(id){{ let p=prods.find(x=>x.id===id); let cant=tempQty[id]||1; let ex=cart.find(x=>x.id===id); if(ex) ex.cant+=cant; else cart.push({{...p,cant}}); tempQty[id]=1; up(); render(prods); }}
+            function up(){{ let tot=0,cnt=0; cart.forEach(c=>{{tot+=c.precio*c.cant; cnt+=c.cant}}); document.getElementById('cartTotalTop').innerText=tot; document.getElementById('totM').innerText=tot; document.getElementById('cartCountTop').innerText=cnt; let lh=''; cart.forEach((c,i)=>{{lh+=`<div class="cart-item"><div><b>${{c.nombre}}</b><br><small>$${{c.precio}} x ${{c.cant}}</small></div><div style="display:flex;align-items:center;gap:6px"><button class="qty-btn" onclick="cambiarCart(${{i}},-1)">-</button><span>${{c.cant}}</span><button class="qty-btn" onclick="cambiarCart(${{i}},1)">+</button></div><div style="color:#FFC107">$${{c.precio*c.cant}}</div></div>`}}); document.getElementById('lista').innerHTML=lh||'Vacío'; }}
+            function cambiarCart(i,d){{ cart[i].cant+=d; if(cart[i].cant<1) cart.splice(i,1); up(); }}
+            function abrir(){{document.getElementById('modal').style.display='flex'}} function cerrar(){{document.getElementById('modal').style.display='none'}}
+            async function enviar(){{
+                let n=document.getElementById('nom').value.trim(); let d=document.getElementById('dir').value.trim(); let t=document.getElementById('tel').value.trim(); let nota=document.getElementById('nota').value.trim();
+                if(!n||!d){{alert('Nombre y dirección obligatorios');return}}
+                if(cart.length===0){{alert('Carrito vacío');return}}
+                await fetch('/finalizar-venta', {{method:'POST', headers:{{'Content-Type':'application/json'}}, body: JSON.stringify(cart.map(c=>({{id:c.id, cant:c.cant}})))}});
+                let msg=`Hola FENIX! Soy ${{n}}%0ADir: ${{d}}%0ATel: ${{t}}%0A%0APEDIDO:%0A`; 
+                cart.forEach(c=>{{msg+=`• ${{c.nombre}} x${{c.cant}} = $${{c.precio*c.cant}}%0A`}}); 
+                msg+=`%0ATOTAL: $${{document.getElementById('totM').innerText}}`;
+                if(nota) msg+=`%0A%0ANOTA: ${{nota}}`;
+                window.open(`https://wa.me/{MI_WHATSAPP}?text=${{msg}}`,'_blank');
+                cart=[]; up(); cerrar(); location.reload();
+            }}
+            render(prods);
+        </script>
+    </body></html>
+    """
+    return html
