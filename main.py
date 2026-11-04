@@ -76,28 +76,26 @@ def home():
         .card-img{{height:220px;background:#111;position:relative}} .card-img img{{width:100%;height:100%;object-fit:cover}} .cat-tag{{position:absolute;top:12px;left:12px;background:#FFC107;color:#000;font-size:10px;font-weight:800;padding:5px 10px;border-radius:6px}}
         .card-body{{padding:14px;display:flex;flex-direction:column;flex:1}} .card-title{{margin:0;font-size:14px;min-height:36px}} .card-desc{{color:#9aa0a6;font-size:12px;min-height:32px;margin-top:4px}}
         .card-bottom{{margin-top:auto;padding-top:10px}} .qty-row{{display:flex;align-items:center;gap:8px;margin-top:12px}} .qty-btn{{width:36px;height:36px;border-radius:8px;border:1px solid #333;background:#222;color:white;font-weight:800;cursor:pointer}} .qty-num{{width:36px;text-align:center}} .btn-add{{background:#FFC107;color:#000;border:none;flex:1;padding:10px;border-radius:10px;font-weight:800;cursor:pointer}}
-
-        /* CARRITO BONITO - ARREGLADO TU FOTO */
-        #modal{{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);z-index:99;justify-content:center;align-items:center;padding:16px}}
-        .modal-box{{background:#1e1e24;border:1px solid #333;border-radius:20px;width:100%;max-width:480px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.6)}}
-        .modal-head{{padding:20px 20px 12px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2a2a2e}}
-        .modal-head h2{{margin:0;font-size:19px}} .close-x{{background:#2a2a32;border:none;color:#aaa;width:32px;height:32px;border-radius:50%;cursor:pointer}}
-        .modal-list-wrap{{padding:14px 14px;overflow:hidden}}
-        #lista{{background:#121214;border:1px solid #2a2a2e;border-radius:14px;max-height:280px;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:10px}}
-        #lista::-webkit-scrollbar{{width:6px}} #lista::-webkit-scrollbar-thumb{{background:#FFC107;border-radius:10px}}
-        #lista::-webkit-scrollbar-track{{background:transparent}}
-        .cart-item{{background:#23232a;border:1px solid #333;border-radius:12px;padding:12px;display:flex;align-items:center;gap:12px}}
-        .cart-item img{{width:54px;height:54px;border-radius:10px;object-fit:cover;background:#111;flex-shrink:0}}
-        .cart-info{{flex:1;min-width:0}} .cart-info b{{font-size:13px;line-height:1.2;display:block}} .cart-info small{{color:#888;font-size:11px}} .cart-price{{color:#FFC107;font-weight:900;font-size:13px;margin-top:4px}}
-        .cart-qty{{display:flex;align-items:center;gap:5px;background:#111;border-radius:9px;padding:4px;border:1px solid #333}}
-        .cart-qty button{{width:28px;height:28px;border:none;background:#2a2a32;color:white;border-radius:6px;cursor:pointer;font-weight:800}}
-        .cart-qty span{{min-width:22px;text-align:center;font-weight:700;font-size:13px}}
-        .modal-footer{{padding:16px 20px 20px 20px;background:#1a1a20;border-top:1px solid #2a2a2e;border-radius:0 0 20px 20px}}
-        .total-row{{display:flex;justify-content:space-between;align-items:center}} .total-row h3{{margin:0;color:#FFC107}}
-        .inp{{width:100%;padding:13px;border-radius:12px;border:1px solid #333;background:#111;color:white;margin-top:10px}} .inp:focus{{border-color:#FFC107;outline:none}}
-        textarea.inp{{min-height:80px}}
-        .btn-wsp{{width:100%;background:#25D366;color:white;padding:14px;border:none;border-radius:12px;font-weight:900;margin-top:12px;cursor:pointer;font-size:15px}}
-        .btn-continue{{width:100%;margin-top:10px;background:#2a2a32;color:#aaa;padding:12px;border:none;border-radius:12px;cursor:pointer}}
+        /* CARRITO CON SCROLL COMPLETO - TODO VISIBLE */
+        #modal{ display:none; position:fixed; inset:0; background:rgba(0,0,0,.8); backdrop-filter:blur(6px); z-index:99; justify-content:center; align-items:center; padding:16px; overflow-y:auto; }
+        .modal-box{ background:#1e1e24; border:1px solid #333; border-radius:20px; width:100%; max-width:480px; max-height:none; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,.6); overflow-y:auto; }
+        .modal-box::-webkit-scrollbar{ width:6px } .modal-box::-webkit-scrollbar-thumb{ background:#FFC107; border-radius:10px }
+        .modal-head{ padding:20px 20px 12px 20px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #2a2a2e; position:sticky; top:0; background:#1e1e24; z-index:2; border-radius:20px 20px 0 0; }
+        .modal-head h2{ margin:0; font-size:19px } .close-x{ background:#2a2a32; border:none; color:#aaa; width:32px; height:32px; border-radius:50%; cursor:pointer }
+        .modal-list-wrap{ padding:14px 14px; }
+        #lista{ background:#121214; border:1px solid #2a2a2e; border-radius:14px; padding:10px; display:flex; flex-direction:column; gap:10px; max-height:none; overflow:visible; }
+        .cart-item{ background:#23232a; border:1px solid #333; border-radius:12px; padding:12px; display:flex; align-items:center; gap:12px; }
+        .cart-item img{ width:54px; height:54px; border-radius:10px; object-fit:cover; background:#111; flex-shrink:0 }
+        .cart-info{ flex:1; min-width:0 } .cart-info b{ font-size:13px; line-height:1.2; display:block } .cart-info small{ color:#888; font-size:11px } .cart-price{ color:#FFC107; font-weight:900; font-size:13px; margin-top:4px }
+        .cart-qty{ display:flex; align-items:center; gap:5px; background:#111; border-radius:9px; padding:4px; border:1px solid #333 }
+        .cart-qty button{ width:28px; height:28px; border:none; background:#2a2a32; color:white; border-radius:6px; cursor:pointer; font-weight:800 }
+        .cart-qty span{ min-width:22px; text-align:center; font-weight:700; font-size:13px }
+        .modal-footer{ padding:16px 20px 20px 20px; background:#1a1a20; border-top:1px solid #2a2a2e; border-radius:0 0 20px 20px; }
+        .total-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; } .total-row h3{ margin:0; color:#FFC107 }
+        .inp{ width:100%; padding:13px; border-radius:12px; border:1px solid #333; background:#111; color:white; margin-top:10px } .inp:focus{ border-color:#FFC107; outline:none }
+        textarea.inp{ min-height:80px }
+        .btn-wsp{ width:100%; background:#25D366; color:white; padding:14px; border:none; border-radius:12px; font-weight:900; margin-top:12px; cursor:pointer; font-size:15px }
+        .btn-continue{ width:100%; margin-top:10px; background:#2a2a32; color:#aaa; padding:12px; border:none; border-radius:12px; cursor:pointer }
 
         .reviews{{padding:50px 20px;max-width:800px;margin:40px auto 0;border-top:1px solid #222}}
         .review-form{{background:#1a1a1e;border:1px solid #25252b;border-radius:16px;padding:20px;margin-bottom:24px}}
