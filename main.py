@@ -76,11 +76,11 @@ def home():
         .card-img{height:180px;background:#111;position:relative} @media(min-width:700px){.card-img{height:210px}} .card-img img{width:100%;height:100%;object-fit:cover} .cat-tag{position:absolute;top:8px;left:8px;background:#FFC107;color:#000;font-size:9px;font-weight:800;padding:4px 8px;border-radius:6px}
         .card-body{padding:10px;display:flex;flex-direction:column;flex:1} .qty-row{display:flex;align-items:center;gap:6px;margin-top:10px} .qty-btn{width:32px;height:32px;border-radius:8px;border:1px solid #333;background:#222;color:white;font-weight:800} .qty-num{width:28px;text-align:center} .btn-add{background:#FFC107;color:#000;border:none;flex:1;padding:9px;border-radius:9px;font-weight:800;cursor:pointer;font-size:13px}
 
-        /* CARRITO - UN SOLO SCROLL - CELULAR OK */
+        /* CARRITO - UN SOLO SCROLL - SIN GLITCH */
         #modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch}
         .modal-box{background:#23232a;border:1px solid #444;border-radius:20px;width:100%;max-width:480px;margin:20px auto;display:flex;flex-direction:column}
-        .modal-head{padding:16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #333;position:sticky;top:0;background:#23232a;z-index:2;border-radius:20px 20px 0 0}
-        .modal-head h2{margin:0;font-size:17px} .close-x{background:#2a2a32;border:1px solid #333;color:#fff;width:34px;height:34px;border-radius:50%}
+        .modal-head{padding:16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #333;background:#23232a;border-radius:20px 20px 0 0}
+        .modal-head h2{margin:0;font-size:17px} .close-x{background:#2a2a32;border:1px solid #333;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer}
         #lista{padding:12px;display:flex;flex-direction:column;gap:10px}
         .cart-item{background:#2a2a32;border:1px solid #3a3a44;border-radius:12px;padding:10px;display:flex;align-items:center;gap:10px}
         .cart-item img{width:50px;height:50px;border-radius:8px;object-fit:cover;background:#111;flex-shrink:0}
@@ -89,11 +89,11 @@ def home():
         .modal-footer{padding:14px 16px 18px 16px;background:#1a1a20;border-top:1px solid #333;border-radius:0 0 20px 20px}
         .total-row{display:flex;justify-content:space-between;align-items:center} .total-row h3{margin:0;color:#FFC107;font-size:18px}
         .inp{width:100%;padding:14px;border-radius:12px;border:1px solid #444;background:#0f0f10;color:white;margin-top:10px;font-size:16px} .inp:focus{border-color:#FFC107;outline:none} textarea.inp{min-height:85px;resize:none}
-        .btn-wsp{width:100%;background:#25D366;color:white;padding:15px;border:none;border-radius:12px;font-weight:900;margin-top:12px;font-size:15px}
-        .btn-continue{width:100%;margin-top:10px;background:#2a2a32;color:#bbb;padding:12px;border:1px solid #444;border-radius:12px}
+        .btn-wsp{width:100%;background:#25D366;color:white;padding:15px;border:none;border-radius:12px;font-weight:900;margin-top:12px;font-size:15px;cursor:pointer}
+        .btn-continue{width:100%;margin-top:10px;background:#2a2a32;color:#bbb;padding:12px;border:1px solid #444;border-radius:12px;cursor:pointer}
         .reviews{padding:30px 16px;max-width:800px;margin:30px auto 0;border-top:1px solid #222}
         .review-form{background:#1a1a1e;border:1px solid #25252b;border-radius:16px;padding:16px;margin-bottom:20px}
-        .stars-input{display:flex;gap:8px;font-size:32px;margin:10px 0} .stars-input span{color:#333} .stars-input span.active{color:#FFC107}
+        .stars-input{display:flex;gap:8px;font-size:32px;margin:10px 0} .stars-input span{color:#333;cursor:pointer} .stars-input span.active{color:#FFC107}
         .reviews-grid{display:grid;gap:10px} .review-card{background:#1a1a1e;border:1px solid #25252b;border-radius:12px;padding:14px}
         .stars{color:#FFC107} .review-name{color:#FFC107;font-weight:bold;margin-top:6px;font-size:13px}
     </style>
@@ -103,7 +103,7 @@ def home():
         <div class="search-box">🔍<input id="busc" placeholder="Buscar productos..." onkeyup="filtrar()"></div>
         <div class="pills"><button class="pill active" onclick="filtrarCat('TODOS')">Todos</button>__BTNS__</div>
         <div id="grid" class="grid"></div>
-        <div class="reviews"><h2 style="text-align:center">⭐ Califica nuestro servicio</h2><div class="review-form"><div class="stars-input" id="starInput"><span onclick="setStars(1)">★</span><span onclick="setStars(2)">★</span><span onclick="setStars(3)">★</span><span onclick="setStars(4)">★</span><span onclick="setStars(5)">★</span></div><input class="inp" id="resenaNombre" placeholder="Tu nombre"><textarea class="inp" id="resenaTexto" placeholder="Tu experiencia..." rows="3"></textarea><button onclick="enviarResena()" style="width:100%;margin-top:12px;background:#FFC107;color:#000;padding:14px;border:none;border-radius:12px;font-weight:800">Publicar mi reseña</button></div><div class="reviews-grid" id="reviewsGrid"></div></div>
+        <div class="reviews"><h2 style="text-align:center">⭐ Califica nuestro servicio</h2><div class="review-form"><div class="stars-input" id="starInput"><span onclick="setStars(1)">★</span><span onclick="setStars(2)">★</span><span onclick="setStars(3)">★</span><span onclick="setStars(4)">★</span><span onclick="setStars(5)">★</span></div><input class="inp" id="resenaNombre" placeholder="Tu nombre"><textarea class="inp" id="resenaTexto" placeholder="Tu experiencia..." rows="3"></textarea><button onclick="enviarResena()" style="width:100%;margin-top:12px;background:#FFC107;color:#000;padding:14px;border:none;border-radius:12px;font-weight:800;cursor:pointer">Publicar mi reseña</button></div><div class="reviews-grid" id="reviewsGrid"></div></div>
 
         <div id="modal">
           <div class="modal-box">
