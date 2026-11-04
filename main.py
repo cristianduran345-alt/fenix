@@ -76,17 +76,18 @@ def home():
         .card-img{height:180px;background:#111;position:relative} @media(min-width:700px){.card-img{height:210px}} .card-img img{width:100%;height:100%;object-fit:cover} .cat-tag{position:absolute;top:8px;left:8px;background:#FFC107;color:#000;font-size:9px;font-weight:800;padding:4px 8px;border-radius:6px}
         .card-body{padding:10px;display:flex;flex-direction:column;flex:1} .qty-row{display:flex;align-items:center;gap:6px;margin-top:10px} .qty-btn{width:32px;height:32px;border-radius:8px;border:1px solid #333;background:#222;color:white;font-weight:800} .qty-num{width:28px;text-align:center} .btn-add{background:#FFC107;color:#000;border:none;flex:1;padding:9px;border-radius:9px;font-weight:800;cursor:pointer;font-size:13px}
 
-        /* CARRITO - UN SOLO SCROLL - SIN GLITCH */
-        #modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch}
-        .modal-box{background:#23232a;border:1px solid #444;border-radius:20px;width:100%;max-width:480px;margin:20px auto;display:flex;flex-direction:column}
-        .modal-head{padding:16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #333;background:#23232a;border-radius:20px 20px 0 0}
-        .modal-head h2{margin:0;font-size:17px} .close-x{background:#2a2a32;border:1px solid #333;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer}
-        #lista{padding:12px;display:flex;flex-direction:column;gap:10px}
+        /* FIX DEFINITIVO DEL GLITCH - SCROLL EN LA CAJA, NO EN EL FONDO */
+        #modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;padding:12px;align-items:center;justify-content:center;overflow:hidden}
+        .modal-box{background:#23232a;border:1px solid #444;border-radius:20px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;transform:translateZ(0)}
+        .modal-box::-webkit-scrollbar{width:6px} .modal-box::-webkit-scrollbar-thumb{background:#FFC107;border-radius:10px}
+        .modal-head{padding:16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #333;background:#23232a;flex-shrink:0}
+        .modal-head h2{margin:0;font-size:17px} .close-x{background:#2a2a32;border:1px solid #333;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;flex-shrink:0}
+        #lista{padding:12px;display:flex;flex-direction:column;gap:10px;flex-shrink:0}
         .cart-item{background:#2a2a32;border:1px solid #3a3a44;border-radius:12px;padding:10px;display:flex;align-items:center;gap:10px}
         .cart-item img{width:50px;height:50px;border-radius:8px;object-fit:cover;background:#111;flex-shrink:0}
         .cart-info{flex:1;min-width:0} .cart-info b{font-size:13px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} .cart-info small{color:#888;font-size:11px} .cart-price{color:#FFC107;font-weight:900;font-size:13px;margin-top:2px}
         .cart-qty{display:flex;align-items:center;gap:4px;background:#111;border-radius:8px;padding:3px;border:1px solid #333} .cart-qty button{width:28px;height:28px;border:none;background:#2a2a32;color:white;border-radius:6px;font-weight:800} .cart-qty span{min-width:18px;text-align:center;font-size:13px;font-weight:700}
-        .modal-footer{padding:14px 16px 18px 16px;background:#1a1a20;border-top:1px solid #333;border-radius:0 0 20px 20px}
+        .modal-footer{padding:14px 16px 18px 16px;background:#1a1a20;border-top:1px solid #333;border-radius:0 0 20px 20px;flex-shrink:0}
         .total-row{display:flex;justify-content:space-between;align-items:center} .total-row h3{margin:0;color:#FFC107;font-size:18px}
         .inp{width:100%;padding:14px;border-radius:12px;border:1px solid #444;background:#0f0f10;color:white;margin-top:10px;font-size:16px} .inp:focus{border-color:#FFC107;outline:none} textarea.inp{min-height:85px;resize:none}
         .btn-wsp{width:100%;background:#25D366;color:white;padding:15px;border:none;border-radius:12px;font-weight:900;margin-top:12px;font-size:15px;cursor:pointer}
