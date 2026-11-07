@@ -97,8 +97,22 @@ def home():
         .stars-input{display:flex;gap:8px;font-size:32px;margin:10px 0} .stars-input span{color:#333;cursor:pointer} .stars-input span.active{color:#FFC107}
         .reviews-grid{display:grid;gap:10px} .review-card{background:#1a1a1e;border:1px solid #25252b;border-radius:12px;padding:14px}
         .stars{color:#FFC107} .review-name{color:#FFC107;font-weight:bold;margin-top:6px;font-size:13px}
+        #loader{position:fixed;inset:0;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:9999;color:white;font-family:sans-serif;transition:opacity .5s}
+        .fenix{width:180px;animation:volar 2s ease-in-out infinite;filter:drop-shadow(0 0 15px #FFD700)}
+        @keyframes volar{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+        .barra{width:220px;height:6px;background:#333;border-radius:10px;overflow:hidden}
+        .barra div{width:40%;height:100%;background:#FFD700;border-radius:10px;animation:cargar 1.2s infinite}
+        @keyframes cargar{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
+        .sub{color:#aaa;font-size:14px;text-align:center;padding:0 20px}
     </style>
     </head><body>
+        <!-- LOADER -->
+        <div id="loader">
+        <img src="/static/fenix.png" class="fenix" alt="Fenix">
+        <h2>Cargando...</h2>
+        <div class="barra"><div></div></div>
+        <p class="sub">Esto puede tardar unos segundos, por favor espere...</p>
+        </div>
         <div class="topbar"><div class="brand"><img src="/static/logo.png" class="icon"><div><b>FÉNIX</b><br><small style="color:#aaa">DISTRIBUCIONES</small></div></div><button class="btn-cart" onclick="abrir()">🛒 $<span id="cartTotalTop">0</span> (<span id="cartCountTop">0</span>)</button></div>
         <div class="hero"><h1>Insumos para Barbería</h1><p>Elige la cantidad y haz tu pedido directo a WhatsApp.</p></div>
         <div class="search-box">🔍<input id="busc" placeholder="Buscar productos..." onkeyup="filtrar()"></div>
@@ -177,6 +191,14 @@ def home():
             async function enviarResena(){let nom=document.getElementById('resenaNombre').value.trim(); let txt=document.getElementById('resenaTexto').value.trim(); if(!nom||!txt){alert('Escribe nombre y comentario');return} await fetch('/api/resenas',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({nombre:nom, comentario:txt, estrellas:estrellasSel})}); document.getElementById('resenaNombre').value=''; document.getElementById('resenaTexto').value=''; setStars(5); cargarResenas();}
             render(prods); cargarResenas(); up();
             document.getElementById('modal').addEventListener('click', function(e){ if(e.target.id==='modal') cerrar(); });
+        </script>
+        </script>
+
+        <script>
+        setTimeout(()=>{
+        const l=document.getElementById('loader');
+        if(l){l.style.opacity='0'; setTimeout(()=>l.style.display='none',500);}
+        }, 1500);
         </script>
     </body></html>
     """
