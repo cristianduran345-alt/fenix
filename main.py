@@ -97,21 +97,30 @@ def home():
         .stars-input{display:flex;gap:8px;font-size:32px;margin:10px 0} .stars-input span{color:#333;cursor:pointer} .stars-input span.active{color:#FFC107}
         .reviews-grid{display:grid;gap:10px} .review-card{background:#1a1a1e;border:1px solid #25252b;border-radius:12px;padding:14px}
         .stars{color:#FFC107} .review-name{color:#FFC107;font-weight:bold;margin-top:6px;font-size:13px}
-        #loader{position:fixed;inset:0;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:9999;color:white;font-family:sans-serif;transition:opacity .5s}
-        .fenix{width:180px;animation:volar 2s ease-in-out infinite;filter:drop-shadow(0 0 15px #FFD700)}
-        @keyframes volar{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
-        .barra{width:220px;height:6px;background:#333;border-radius:10px;overflow:hidden}
-        .barra div{width:40%;height:100%;background:#FFD700;border-radius:10px;animation:cargar 1.2s infinite}
-        @keyframes cargar{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
-        .sub{color:#aaa;font-size:14px;text-align:center;padding:0 20px}
+        #loader{
+        position: fixed; inset: 0;
+        background: black;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        z-index: 9999;
+        }
+        .fenix-volando{
+        width: 180px;
+        animation: volar 2.2s ease-in-out infinite;
+        }
+        @keyframes volar{
+        0%{ transform: translateX(-40px) translateY(0) rotate(-3deg); }
+        25%{ transform: translateX(-10px) translateY(-18px) rotate(2deg) scaleY(0.95); }
+        50%{ transform: translateX(20px) translateY(0) rotate(-2deg); }
+        75%{ transform: translateX(40px) translateY(-18px) rotate(3deg) scaleY(0.95); }
+        100%{ transform: translateX(-40px) translateY(0) rotate(-3deg); }
+        }
     </style>
     </head><body>
-        <!-- LOADER -->
         <div id="loader">
-        <img src="/static/fenix.png" class="fenix" alt="Fenix">
-        <h2>Cargando...</h2>
-        <div class="barra"><div></div></div>
-        <p class="sub">Esto puede tardar unos segundos, por favor espere...</p>
+        <img src="/static/fenix.png" class="fenix-volando" alt="Fenix">
+        <p>Cargando...</p>
+        <div class="barra"><div class="progreso"></div></div>
         </div>
         <div class="topbar"><div class="brand"><img src="/static/logo.png" class="icon"><div><b>FÉNIX</b><br><small style="color:#aaa">DISTRIBUCIONES</small></div></div><button class="btn-cart" onclick="abrir()">🛒 $<span id="cartTotalTop">0</span> (<span id="cartCountTop">0</span>)</button></div>
         <div class="hero"><h1>Insumos para Barbería</h1><p>Elige la cantidad y haz tu pedido directo a WhatsApp.</p></div>
